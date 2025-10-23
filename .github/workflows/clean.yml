@@ -1,1 +1,36 @@
+name: Clean Unbounce CSV Files
+
+on:
+  workflow_dispatch:      # ✅ 允许你手动触发（立刻跑）
+  push:
+    paths:
+      - 'data/**'         # 🪄 当 data 文件夹里有文件更新时自动跑
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas
+
+      - name: Run cleaning script
+        run: python scripts/clean_unbounce_csv.py
+
+      - name: Commit cleaned files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "actions@github.com"
+          git add cleaned/
+          git commit -m "🧽 Auto clean CSV files"
+          git push
+        continue-on-error: true
 
